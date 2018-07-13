@@ -1,2 +1,3 @@
 # TriviaGame
-/trivia-game
+*accessed via /trivia-game locally*
+
