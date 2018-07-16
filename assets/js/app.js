@@ -1,6 +1,9 @@
 /* Trivia Game Logic */
 // Kenneth Postigo, July 2018
 
+// uses an API to get trivia questions
+
+
 $(function() {
 // hide .game div on page load
   $(".game").hide();
