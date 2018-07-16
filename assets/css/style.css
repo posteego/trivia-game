@@ -1,0 +1,14 @@
+.title {
+  font-size: 56px;
+  font-weight: 700;
+}
+
+.header {
+  position: relative;
+  top: 200px;
+}
+
+.start-btn {
+  position: relative;
+  top: 20px;
+}
