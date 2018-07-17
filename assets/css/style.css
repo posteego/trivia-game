@@ -12,3 +12,7 @@
   position: relative;
   top: 20px;
 }
+
+button {
+  display: inline;
+}
