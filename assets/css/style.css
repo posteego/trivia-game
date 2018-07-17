@@ -8,11 +8,7 @@
   top: 200px;
 }
 
-.start-btn {
+button {
   position: relative;
   top: 20px;
-}
-
-button {
-  display: inline;
 }

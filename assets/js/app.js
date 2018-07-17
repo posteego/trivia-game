@@ -13,13 +13,20 @@
 // docs : https://developers.giphy.com/docs/
 var gifURL = '',
     gifKEY = 'gmUoQcltu2OqZuLZ9RXHRKoT7hR8CHrk';
+// jservice categories
+const category_quant = 3;
+
+// get 20 categories
+var catergories_url = 'http://jservice.io/api/categories?count=20';
+
+// easy access vars
 var start = $(".start");
 
 ////////////////////////////////////////////
 //////////////// Utility ///////////////////
 ////////////////////////////////////////////
 
-function randomize(min, max){
+function randomize(min, max)){
   return Math.floor(Math.random() * ( max - min + 1) + min);
 }
 
@@ -34,17 +41,24 @@ $(".start-btn").on('click', function() {
   $(".start-btn").remove();   // remove play button
 
   // get categories from api
-  var catergories_url = 'http://jservice.io/api/categories?count=3';
   $.ajax({
     url : catergories_url,
     method : 'GET'
   }).then( function(categories) {
-    let btn = $('<button>');
-    btn.attr('type','button');
+    for (let i=0; i < category_quant; i++){
+      // create button element
+      let btn = $('<button>');
 
-    for (i in categories){
+      // choose 3 random categories from 20 
+
+      // add attributes to button
+      btn.attr({
+        type : 'button',
+        class : 'btn btn-small btn-dark mx-2'
+      });
+      // add category title to button text and append to .start div
       btn.text(categories[i].title);
-      btn.prependTo(start);
-    }
+      start.append(btn).hide().fadeIn();
+    };
   });
 });
