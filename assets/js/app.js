@@ -26,6 +26,8 @@ var start = $(".start"),
   q_div = $(".question"),
   choice_div = $(".choices"),
   p = $("<p>"),
+  s = $("<span>"),
+  t = $("<p><b>");
   log = console.log;
 
 // timer, counters, other vars
@@ -72,8 +74,17 @@ function randomize(num, min) {
 
 function runTimer() {
 // run the timer
-  clearInterval(timer);
-  //timer = setInterval(otherfunction(), 1000);
+  // start timer
+  timer = setInterval(awaitChoices(), 1000);
+}
+
+function awaitChoices() {
+  time--;
+  if (time === 0) {
+    // do something
+  }
+
+  t.html(time);
 }
 
 function display() {
@@ -93,6 +104,12 @@ function display() {
 
       // switch to end game state if on last question
       gameData.last = (index === last) ? true : false;
+
+      // display timer
+      t = $("<p><b>");
+      t.attr('id', 'time').html(time);
+      s.html('Time Left: ').append(t);
+      s.appendTo($(".timer"));
 
       // add question to display
       p.attr({
