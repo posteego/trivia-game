@@ -23,7 +23,8 @@ const general = "https://opentdb.com/api.php?amount=5&category=9&difficulty=medi
 
 // easy access vars
 var start = $(".start"),
-  q_div = $(".question")
+  q_div = $(".question"),
+  choice_div = $(".choices"),
   p = $("<p>"),
   log = console.log;
 
@@ -33,7 +34,8 @@ var time = 60, // 60 seconds
   correct = 0,
   incorrect = 0,
   questions = [],
-  choices = [];
+  choices = [],
+  random_choices = [];
 
 
 // keeps track of start,mid,end game (0,1,2) and question/answer
@@ -53,24 +55,42 @@ var index = 0,
 //////////////// Utility ///////////////////
 ////////////////////////////////////////////
 
-function randomize(num, min, max) {
-  while ()
-  return Math.floor(Math.random() * (max - min + 1) + min);
+function randomize(num, min) {
+// randomize list of numbers and store in random_choices array
+  while (random_choices.length < num) {
+    // set random number
+    let randomnumber = Math.floor(Math.random() * (num - min + 1) + min);
+
+    // check if repeat
+    if (random_choices.indexOf(randomnumber) > -1) continue;
+
+    // otherwise add index (randomnumber) to array
+    random_choices[random_choices.length] = randomnumber;
+  }
+
 }
 
 function runTimer() {
 // run the timer
   clearInterval(timer);
-  timer = setInterval(display(time), 1000);
+  //timer = setInterval(otherfunction(), 1000);
 }
 
-function display(timer) {
+function display() {
   switch (gameData.step) {
     case 0:
       // remove category choices
       $(".start").remove();
       break;
+    
     case 1:
+      // increase question index if the question was answered
+      if (gameData.answered === true) {
+        index++;
+        gameData.question = index;
+        gameData.answer = index * 4;
+      }
+
       // switch to end game state if on last question
       gameData.last = (index === last) ? true : false;
 
@@ -83,21 +103,20 @@ function display(timer) {
       p.appendTo(q_div);
 
       // add choices to display
-      for (let i = 0; i < gameData.choiceMax; i++){
-        p.attr({
-          id: 'choice' + i;
+      randomize(gameData.choiceMax, gameData.answer);
+      for (let i = 0; i < random_choices.length; i++){
+        let button = $("<button>");
+        button.attr({
+          id: 'choice' + i,
+          class: 'btn btn-light btn-block mx-2'
         });
-        p.html(choices[gameData.])
+        button.html(choices[random_choices[i]]);
+        button.appendTo(choice_div);
       }
 
-
-      // increase question index if the question was answered
-      if (gameData.answered === true) {
-        index++;
-        gameData.question = index;
-        gameData.answer = index * 4;
-      }
+      runTimer();
       break;
+    
     case 2:
       break;
   }
@@ -144,13 +163,15 @@ function startGame(category) {
 
     // loop through questions
     for (let i = 0; i < response.results.length; i++) {
-      // push correct answer into first choice for each question
-      choices.push(response.results[i].correct_answer);
+      // push correct answer into first choice for each question after decoding
+      let a = $("<p>").html(response.results[i].correct_answer).text();
+      choices.push(a);
 
       // loop through the three incorrect answers
       for (let j = 0; j < response.results[i].incorrect_answers.length; j++) {
-        // push incorrect answer into choices array
-        choices.push(response.results[i].incorrect_answers[j]);
+        // push incorrect answer into choices array after decoding
+        let a = $("<p>").html(response.results[i].incorrect_answers[j]).text();
+        choices.push(a);
       }
       // push the question into the questions array
       questions.push(response.results[i].question);
@@ -162,7 +183,7 @@ function startGame(category) {
     last = questions.length - 1;
     // move to mid game
     gameData.step = 1;
-    runTimer();
+    display();
   });
 
 }
