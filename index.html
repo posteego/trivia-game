@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Jeopardy</title>
+    <title>Online Trivia Game</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
@@ -13,20 +13,26 @@
   </head>
   <body>
     <div class="container">
-      <div class="jumbotron header text-center bg-white">
-        <h1 class="title">Online Jeopardy</h1>
+      <div class="jumbotron text-center bg-white">
+        <h1 class="title">Trivia Game</h1>
         <div class="start">
-            <button type="button" class="btn start-btn btn-dark">
-              Categories
+            <button type="button" id="general" class="btn game-btn btn-small btn-dark mx-2">
+              General
+            </button>
+            <button type="button" id="art" class="btn game-btn btn-small btn-dark mx-2">
+              Art
+            </button>
+            <button type="button" id="celebrity" class="btn game-btn btn-small btn-dark mx-2">
+              Celebrity
             </button>
         </div>
       </div>
       <div class="game">
-        <div class="timer">
+        <div class="row timer">
         </div>
-        <div class="question">
+        <div class="row question text-center align-center">
         </div>
-        <div class="choices">
+        <div class="container choices">
         </div>
       </div>
     </div>
