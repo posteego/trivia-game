@@ -12,22 +12,24 @@
 // giphy api url + key
 // docs : https://developers.giphy.com/docs/
 var gifURL = '',
-    gifKEY = 'gmUoQcltu2OqZuLZ9RXHRKoT7hR8CHrk';
+  gifKEY = 'gmUoQcltu2OqZuLZ9RXHRKoT7hR8CHrk';
 
 // opentdb api urls
 const general = "https://opentdb.com/api.php?amount=5&category=9&difficulty=medium&type=multiple",
-  
+
   art = "https://opentdb.com/api.php?amount=5&category=25&difficulty=medium&type=multiple",
-  
+
   celebrity = "https://opentdb.com/api.php?amount=5&category=26&difficulty=medium&type=multiple";
 
 // easy access vars
+// terrible variable names lol
 var start = $(".start"),
   q_div = $(".question"),
   choice_div = $(".choices"),
+  choice_btn = $(".choices .btn"),
   p = $("<p>"),
   s = $("<span>"),
-  t = $("<p><b>");
+  t = $("<p><b>"),
   log = console.log;
 
 // timer, counters, other vars
@@ -50,7 +52,7 @@ var index = 0,
     choiceMax: (index * 4) + 4,
     answered: false,
     last: false
-};
+  };
 
 
 ////////////////////////////////////////////
@@ -58,10 +60,10 @@ var index = 0,
 ////////////////////////////////////////////
 
 function randomize(num, min) {
-// randomize list of numbers and store in random_choices array
+  // randomize list of numbers and store in random_choices array
   while (random_choices.length < num) {
     // set random number
-    let randomnumber = Math.floor(Math.random() * (num - min + 1) + min);
+    let randomnumber = Math.floor(Math.random() * (num - min) + min);
 
     // check if repeat
     if (random_choices.indexOf(randomnumber) > -1) continue;
@@ -73,9 +75,8 @@ function randomize(num, min) {
 }
 
 function runTimer() {
-// run the timer
-  // start timer
-  timer = setInterval(awaitChoices(), 1000);
+  // run the timer
+  timer = setInterval(awaitChoices, 1000);
 }
 
 function awaitChoices() {
@@ -83,8 +84,12 @@ function awaitChoices() {
   if (time === 0) {
     // do something
   }
-
+  // display timer
   t.html(time);
+
+  // choice_btn.on('click', function {
+  //   if ( $(this).attr('id') === choice
+  // })
 }
 
 function display() {
@@ -93,7 +98,7 @@ function display() {
       // remove category choices
       $(".start").remove();
       break;
-    
+
     case 1:
       // increase question index if the question was answered
       if (gameData.answered === true) {
@@ -121,7 +126,7 @@ function display() {
 
       // add choices to display
       randomize(gameData.choiceMax, gameData.answer);
-      for (let i = 0; i < random_choices.length; i++){
+      for (let i = 0; i < random_choices.length; i++) {
         let button = $("<button>");
         button.attr({
           id: 'choice' + i,
@@ -130,10 +135,12 @@ function display() {
         button.html(choices[random_choices[i]]);
         button.appendTo(choice_div);
       }
+      // empty random array
+      random_choices = [];
 
       runTimer();
       break;
-    
+
     case 2:
       break;
   }
@@ -143,10 +150,10 @@ function display() {
 ////////////////////////////////////////////
 //////////////// Functions /////////////////
 ////////////////////////////////////////////
-  
+
 $(".game-btn").on('click', function () {
-// category chosen
-  
+  // category chosen
+
   // update display
   display();
   // send category to startGame
@@ -195,7 +202,7 @@ function startGame(category) {
       // decode html entities in the string and replace
       questions[i] = $("<p>").html(questions[i]).text();
     }
-
+    
     // update 'last' var to have the index of the last question
     last = questions.length - 1;
     // move to mid game
