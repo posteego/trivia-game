@@ -26,7 +26,7 @@ const general = "https://opentdb.com/api.php?amount=5&category=9&difficulty=medi
 var start = $(".start"),
   q_div = $(".question"),
   choice_div = $(".choices"),
-  choice_btn = $(".choices .btn"),
+  choice_btn = $("button"),
   p = $("<p>"),
   s = $("<span>"),
   t = $("<p><b>"),
@@ -34,9 +34,8 @@ var start = $(".start"),
 
 // timer, counters, other vars
 var time = 60, // 60 seconds
+  duration = 0,
   timer,
-  correct = 0,
-  incorrect = 0,
   questions = [],
   choices = [],
   random_choices = [];
@@ -47,11 +46,14 @@ var index = 0,
   last = 0,
   gameData = {
     step: 0,
-    question: index,
-    answer: index * 4,
-    choiceMax: (index * 4) + 4,
+    question: index,    // use index var here for
+    answer: index * 4,  // formula reference
+    choiceMax: (index * 4) + 4, // here too
+    correct: 0,
+    incorrect: 0,
     answered: false,
-    last: false
+    last: false,
+    winner: false
   };
 
 
@@ -60,8 +62,8 @@ var index = 0,
 ////////////////////////////////////////////
 
 function randomize(num, min) {
-  // randomize list of numbers and store in random_choices array
-  while (random_choices.length < num) {
+// randomize list of numbers and store in random_choices array
+  while (random_choices.length < 4) {   // only want 4 numbers in the array
     // set random number
     let randomnumber = Math.floor(Math.random() * (num - min) + min);
 
@@ -71,78 +73,30 @@ function randomize(num, min) {
     // otherwise add index (randomnumber) to array
     random_choices[random_choices.length] = randomnumber;
   }
-
 }
 
+
 function runTimer() {
-  // run the timer
+// run the timer
   timer = setInterval(awaitChoices, 1000);
 }
 
+
 function awaitChoices() {
-  time--;
+// manages when to move on to next question or end game
+  
+  time--;   // subtract 1 second
+  duration++; // add 1 second!
+  t.html(time); // display timer
+
+  // move to end game when time runs out
   if (time === 0) {
-    // do something
-  }
-  // display timer
-  t.html(time);
-
-  // choice_btn.on('click', function {
-  //   if ( $(this).attr('id') === choice
-  // })
-}
-
-function display() {
-  switch (gameData.step) {
-    case 0:
-      // remove category choices
-      $(".start").remove();
-      break;
-
-    case 1:
-      // increase question index if the question was answered
-      if (gameData.answered === true) {
-        index++;
-        gameData.question = index;
-        gameData.answer = index * 4;
-      }
-
-      // switch to end game state if on last question
-      gameData.last = (index === last) ? true : false;
-
-      // display timer
-      t = $("<p><b>");
-      t.attr('id', 'time').html(time);
-      s.html('Time Left: ').append(t);
-      s.appendTo($(".timer"));
-
-      // add question to display
-      p.attr({
-        id: 'question',
-        class: 'lead'
-      });
-      p.html(questions[gameData.question]);
-      p.appendTo(q_div);
-
-      // add choices to display
-      randomize(gameData.choiceMax, gameData.answer);
-      for (let i = 0; i < random_choices.length; i++) {
-        let button = $("<button>");
-        button.attr({
-          id: 'choice' + i,
-          class: 'btn btn-light btn-block mx-2'
-        });
-        button.html(choices[random_choices[i]]);
-        button.appendTo(choice_div);
-      }
-      // empty random array
-      random_choices = [];
-
-      runTimer();
-      break;
-
-    case 2:
-      break;
+    // stop timer
+    clearInterval(timer);
+    // change to endgame
+    gameData.step = 2;
+    // display end game
+    display();
   }
 }
 
@@ -152,10 +106,8 @@ function display() {
 ////////////////////////////////////////////
 
 $(".game-btn").on('click', function () {
-  // category chosen
-
-  // update display
-  display();
+// category chosen
+  display();  // update display
   // send category to startGame
   let category = $(this).attr('id');
   startGame(category);
@@ -177,7 +129,7 @@ function startGame(category) {
       url = celebrity;
       break;
   }
-
+  
   // ajax call for populating questions, and choices arrays
   $.ajax({
     url: url,
@@ -202,12 +154,157 @@ function startGame(category) {
       // decode html entities in the string and replace
       questions[i] = $("<p>").html(questions[i]).text();
     }
-    
+    log(choices);
+
     // update 'last' var to have the index of the last question
     last = questions.length - 1;
     // move to mid game
     gameData.step = 1;
+    // start timer
+    runTimer();
     display();
   });
+
+}
+
+
+function display() {
+  // displays game start to end
+  switch (gameData.step) {
+    case 0:
+      // remove category choices
+      $(".start").remove();
+      break;
+
+    case 1:
+      // switch to end game state if on last question
+      gameData.last = (index === last) ? true : false;
+
+      // increase question index if the question was answered
+      if (gameData.answered === true && gameData.last === false) {
+        index++;
+        gameData.question = index;
+        gameData.answer = index * 4;
+        gameData.choiceMax = gameData.answer + 4;
+        gameData.answered = false;
+      } else if (gameData.answered === true && gameData.last === true) {
+        // move to the end of the game (displaying score, stoping timer, etc)
+        gameData.step = 2;
+        display();
+        break;
+      }
+
+      // display timer
+      t.attr('id', 'time').html(time);
+      s.html('Time Left: ').append(t);
+      s.appendTo($(".timer"));
+
+      // add question to display
+      p.attr({
+        id: 'question',
+        class: 'lead'
+      });
+      p.html(questions[gameData.question]);
+      p.appendTo(q_div);
+
+      // randomize choices
+      randomize(gameData.choiceMax, gameData.answer);
+      // clear previous choice buttons
+      choice_div.empty();
+
+      // display choice buttons
+      for (let i = 0; i < random_choices.length; i++) {
+        let button = $("<button>");
+        button.attr({
+          id: 'choice' + i,
+          class: 'btn choice btn-light btn-block mx-2'
+        });
+        button.html(choices[random_choices[i]]);
+        button.appendTo(choice_div);
+      }
+
+      // empty random array
+      random_choices = [];
+
+      // wait for choice
+      $("button").one('click', function () {
+        // question was answered
+        gameData.answered = true;
+        // check if correct or not then give point accordingly
+        if ($(this).text() === choices[gameData.answer]) {
+          gameData.correct++;
+        } else {
+          gameData.incorrect++;
+        }
+        display();
+      });
+
+      break;
+
+    case 2:
+      // stop timer
+      clearInterval(timer);
+      // display got too long so here's a new function to display the end
+      endGame();
+      break;
+  }
+}
+
+
+function endGame() {
+  // make the person a winner if he gets more questions right than wrong
+  gameData.winner = (gameData.correct > gameData.incorrect) ? true : false;
+
+  // disable game!
+  $(".game").fadeOut("slow");
+
+  // wait a second for everything to fade before removing stuff
+  setTimeout(function () {
+    $(".game").empty();
+  }, 500);
+
+  let h = $("<h1>"),
+    h2 = $("<h2>"),
+    h3 = $("<h2>"),
+    h4 = $("<h2>"),
+    h5 = $("<h2>");
+  
+  // calculate score as percentage
+  let score = Math.floor(gameData.correct / (gameData.incorrect + gameData.correct) * 100);
+
+  // fill in html as necessary
+  h2.attr('class', 'correct');
+  h2.html('Correct: ' + gameData.correct);
+
+  h3.attr('class', 'incorrect');
+  h3.html('Incorrect: ' + gameData.incorrect);
+
+  h4.attr('class', 'score');
+  h4.html('Final Score: ' + score + '%');
+
+  h5.attr('class', 'timing');
+  h5.html('The game was ' + duration + ' seconds long!');
+
+  // set h to be correct for winner or loser
+  switch (gameData.winner) {
+    case true:
+      h.attr('class', 'you-won');
+      h.html('You Won! 😃');
+      break;
+    case false:
+      h.attr('class', 'you-lost');
+      h.html('You Lost! 😩');
+      break;
+  }
+
+  // make sure game disappears and clears before appending and displaying info
+  setTimeout(function () {
+    $(".game").append(h);
+    $(".game").append(h2);
+    $(".game").append(h3);
+    $(".game").append(h4);
+    $(".game").append(h5);
+    $(".game").fadeIn("fast");
+  }, 500);
 
 }

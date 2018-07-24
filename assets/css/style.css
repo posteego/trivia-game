@@ -1,9 +1,21 @@
 .title {
-  font-size: 56px;
+  font-size: 78px;
   font-weight: 700;
 }
 
 button {
   position: relative;
   top: 20px;
+}
+
+#time {
+  font-weight: bold;
+}
+
+.you-won {
+  color: rgb(72, 255, 0);
+}
+
+.you-lost {
+  color: red;
 }
