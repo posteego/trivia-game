@@ -9,11 +9,6 @@
 /////////////// Variables //////////////////
 ////////////////////////////////////////////
 
-// giphy api url + key
-// docs : https://developers.giphy.com/docs/
-var gifURL = '',
-  gifKEY = 'gmUoQcltu2OqZuLZ9RXHRKoT7hR8CHrk';
-
 // opentdb api urls
 const general = "https://opentdb.com/api.php?amount=5&category=9&difficulty=medium&type=multiple",
 
@@ -154,7 +149,6 @@ function startGame(category) {
       // decode html entities in the string and replace
       questions[i] = $("<p>").html(questions[i]).text();
     }
-    log(choices);
 
     // update 'last' var to have the index of the last question
     last = questions.length - 1;
