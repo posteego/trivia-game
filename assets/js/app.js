@@ -274,7 +274,12 @@ function endGame() {
   h3.html('Incorrect: ' + gameData.incorrect);
 
   h4.attr('class', 'score');
-  h4.html('Final Score: ' + score + '%');
+
+  if (gameData.correct === 0 && gameData.incorrect === 0){
+    h4.html('Final Score: 0%');
+  } else {
+    h4.html('Final Score: ' + score + '%');
+  }
 
   h5.attr('class', 'timing');
   h5.html('The game was ' + duration + ' seconds long!');
